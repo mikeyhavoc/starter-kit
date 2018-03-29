@@ -3,15 +3,18 @@ const sass = require('gulp-sass');
 const postcss = require('gulp-postcss');
 const sourcemaps = require('gulp-sourcemaps');
 const autoprefixer = require('autoprefixer');
+const cleanCSS = require('gulp-clean-css');
 const browserSync = require('browser-sync').create();
 
 dest = {
     'sassSrc' : "./src/scss/**/*.scss",
     'sassDest' : "./src/css-pre/",
     'postCss' : "./src/css-pre/**/*.css",
-    'postDest' : "./public/css/",
+    'postDest' : "./src/css-pre/",
     'maps' : "./maps/",
-    'broswerSysnc' : "./public"
+    'broswerSysnc' : "./public",
+    'miniSrc' : "./src/css-pre/**/*.css",
+    'miniDest' : "./public/css/"
 
 }
 
@@ -33,6 +36,14 @@ gulp.task('autoprefixer', function () {
         .pipe(gulp.dest(dest.postDest));
     });
 
+    gulp.task('minifyCss',() => {
+        return gulp.src(dest.miniSrc)
+            .pipe(sourcemaps.init())
+            .pipe(cleanCSS())
+            .pipe(sourcemaps.write('./maps'))
+            .pipe(gulp.dest(dest.miniDest));
+        });
+
 // Static server
 gulp.task('browser-sync', function() {
     browserSync.init({
@@ -41,3 +52,5 @@ gulp.task('browser-sync', function() {
         }
     });
 });
+
+gulp.task('default', ['sass', 'autoprefixer', 'minifyCss']);
