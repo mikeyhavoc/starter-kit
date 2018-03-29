@@ -3,14 +3,15 @@ const sass = require('gulp-sass');
 const postcss = require('gulp-postcss');
 const sourcemaps = require('gulp-sourcemaps');
 const autoprefixer = require('autoprefixer');
-
+const browserSync = require('browser-sync').create();
 
 dest = {
     'sassSrc' : "./src/scss/**/*.scss",
     'sassDest' : "./src/css-pre/",
     'postCss' : "./src/css-pre/**/*.css",
     'postDest' : "./public/css/",
-    'maps' : "./public/css/maps/"
+    'maps' : "./maps/",
+    'broswerSysnc' : "./public"
 
 }
 
@@ -25,7 +26,18 @@ gulp.task('sass', function () {
 gulp.task('autoprefixer', function () {
     return gulp.src(dest.postCss)
         .pipe(sourcemaps.init())
-        .pipe(postcss([ autoprefixer() ]))
+        .pipe(postcss([ autoprefixer( {
+            browsers: ['last 2 versions']
+        }) ]))
         .pipe(sourcemaps.write(dest.maps))
         .pipe(gulp.dest(dest.postDest));
     });
+
+// Static server
+gulp.task('browser-sync', function() {
+    browserSync.init({
+        server: {
+            baseDir: dest.browserSync
+        }
+    });
+});
